@@ -1,4 +1,4 @@
-<polymer-element name="the-panel" attributes="edge size">
+<polymer-element name="the-panel" attributes="edge size handle">
   <template>
     <style>
       @host {
@@ -16,15 +16,25 @@
     Polymer('the-panel', {
       edge: 'left',
       size: 200,
+      handle: 0,
       enteredView: function () {
         this.observe();
-        this.updateLocation();
+        this.cleanUpLocation();
         this.updateVisibility();
       },
       leftView: function () {
         if (this.observer) {
           this.observer.disconnect();
         }
+      },
+      edgeChanged: function () {
+        this.updateVisibility();
+      },
+      sizeChanged: function () {
+        this.updateVisibility();
+      },
+      handleChanged: function () {
+        this.updateVisibility();
       },
       getMain: function () {
         return this.querySelector('main');
@@ -51,21 +61,21 @@
             return ['height', 'width'];
         }
       },
-      updateLocation: function () {
+      cleanUpLocation: function () {
         this.style.left = '';
         this.style.right = '';
         this.style.top = '';
         this.style.bottom = '';
-        this.style[this.getPositionDimension()] = '0px';
       },
       updateVisibility: function () {
         var sizeDimensions = this.getSizeDimensions();
         this.style[sizeDimensions[1]] = '100%';
-        if (this.getMain().childElementCount > 0) {
-          this.style[sizeDimensions[0]] = this.size + 'px';
-        } else {
-          this.style[sizeDimensions[0]] = '0px';
+        this.style[sizeDimensions[0]] = this.size + 'px';
+        var outside = 0;
+        if (this.getMain().childElementCount === 0) {
+          outside = (this.size - this.handle) * -1;
         }
+        this.style[this.getPositionDimension()] = outside + 'px';
       }
     });
   </script>
