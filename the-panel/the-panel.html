@@ -1,4 +1,4 @@
-<polymer-element name="the-panel" attributes="edge size handle">
+<polymer-element name="the-panel" attributes="edge size handle open automatic">
   <template>
     <style>
       @host {
@@ -17,15 +17,16 @@
       edge: 'left',
       size: 200,
       handle: 0,
+      automatic: true,
+      open: false,
       enteredView: function () {
-        this.observe();
         this.cleanUpLocation();
+        this.automaticChanged();
         this.updateVisibility();
+        this.addEventListener('click', this.handleClicked.bind(this), false);
       },
       leftView: function () {
-        if (this.observer) {
-          this.observer.disconnect();
-        }
+        this.unobserve();
       },
       edgeChanged: function () {
         this.updateVisibility();
@@ -36,17 +37,53 @@
       handleChanged: function () {
         this.updateVisibility();
       },
+      openChanged: function () {
+        this.updateVisibility();
+      },
+      automaticChanged: function () {
+        if (this.automatic) {
+          this.observe();
+        } else {
+          this.unobserve();
+        }
+      },
       getMain: function () {
         return this.querySelector('main');
       },
+      handleClicked: function (event) {
+        if (this.automatic) {
+          return;
+        }
+        if (this.open && event.target === this) {
+          this.open = false;
+          return;
+        }
+        if (!this.open) {
+          this.open = true;
+        }
+      },
       observe: function () {
-        this.observer = new MutationObserver(this.updateVisibility.bind(this));
+        this.observer = new MutationObserver(this.handleMutations.bind(this));
         this.observer.observe(this.getMain(), {
           subtree: false,
           childList: true,
           attributes: false,
           characterData: false
         });
+      },
+      unobserve: function () {
+        if (!this.observer) {
+          return;
+        }
+        this.observer.disconnect();
+        this.observer = null;
+      },
+      handleMutations: function () {
+        if (this.getMain().childElementCount === 0) {
+          this.open = false;
+        } else {
+          this.open = true;
+        }
       },
       getPositionDimension: function () {
         return this.edge;
@@ -72,7 +109,7 @@
         this.style[sizeDimensions[1]] = '100%';
         this.style[sizeDimensions[0]] = this.size + 'px';
         var outside = 0;
-        if (this.getMain().childElementCount === 0) {
+        if (!this.open) {
           outside = (this.size - this.handle) * -1;
         }
         this.style[this.getPositionDimension()] = outside + 'px';
