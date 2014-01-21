@@ -42,7 +42,7 @@
       },
       automaticChanged: function () {
         if (this.automatic) {
-          this.observe();
+          this.observeChanges();
         } else {
           this.unobserve();
         }
@@ -62,7 +62,7 @@
           this.open = true;
         }
       },
-      observe: function () {
+      observeChanges: function () {
         this.observer = new MutationObserver(this.handleMutations.bind(this));
         this.observer.observe(this.getMain(), {
           subtree: false,
