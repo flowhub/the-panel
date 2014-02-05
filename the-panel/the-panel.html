@@ -58,13 +58,14 @@
         if (this.automatic) {
           return;
         }
-        if (this.open && event.target === this) {
+        if (event.target !== this) {
+          return;
+        }
+        if (this.open) {
           this.open = false;
           return;
         }
-        if (!this.open) {
-          this.open = true;
-        }
+        this.open = true;
       },
       observeChanges: function () {
         this.observer = new MutationObserver(this.handleMutations.bind(this));
