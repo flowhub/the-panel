@@ -19,6 +19,10 @@
       handle: 0,
       automatic: true,
       open: false,
+      toggleOpen: function (open) {
+        this.open = open;
+        this.updateVisibility();
+      },
       enteredView: function () {
         this.cleanUpLocation();
         this.automaticChanged();
