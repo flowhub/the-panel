@@ -51,8 +51,14 @@
           this.unobserve();
         }
       },
+      getHeader: function () {
+        return this.querySelector('header');
+      },
       getMain: function () {
         return this.querySelector('main');
+      },
+      getFooter: function () {
+        return this.querySelector('footer');
       },
       handleClicked: function (event) {
         if (this.automatic) {
